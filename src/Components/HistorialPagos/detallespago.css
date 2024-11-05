@@ -1,0 +1,35 @@
+.detallepagocontainer {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  }
+
+  #detallepago{
+    top: 25%;
+    width: 400px;
+    position: fixed;
+    padding: 10px;
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Añadir sombra para mejor visibilidad */
+    text-align: center; /* Centrar el contenido del contenedor */
+  }
+  
+  .detallepagocontainer h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: #333;
+  }
+  
+  .detallepagocontainer p {
+    font-size: 18px;
+    margin: 10px 0;
+    color: #555;
+  }
+  

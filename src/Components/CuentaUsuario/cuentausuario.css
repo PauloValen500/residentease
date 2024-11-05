@@ -1,0 +1,39 @@
+/* cuentausuario.css */
+
+.usuario-container {
+  top: 25%;
+  left: 40%;
+  position: fixed;
+  padding: 20px;
+  background-color: #f4f4f4;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Añadir sombra para mejor visibilidad */
+  text-align: center; /* Centrar el contenido del contenedor */
+  }
+  
+  h2 {
+    text-align: center;
+    color: #333;
+  }
+  
+  .usuario-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .usuario-info p {
+    margin: 0;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .usuario-info p:last-child {
+    border-bottom: none;
+  }
+  
+  strong {
+    color: #007bff;
+  }
+  

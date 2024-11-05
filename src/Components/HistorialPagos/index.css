@@ -1,0 +1,67 @@
+.historialpagoscontainer{
+    margin-top: 70px; /* Para evitar la navbar */
+    margin-left: 41px; /* Para evitar el sidemenu */
+    padding: 20px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Añadir sombra para mejor visibilidad */
+    text-align: center; /* Centrar el contenido del contenedor */
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 18px;
+    text-align: left;
+  }
+  
+  .table th, .table td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+  }
+  
+  
+  .table tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .table button {
+    background-color: #3886d4;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .table button:hover {
+    background-color: #3a9bfb;
+  }
+
+  .btpago {
+    background-color: #41bf45;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btpago:hover {
+    background-color: #45a049;
+  }
+  
+  
