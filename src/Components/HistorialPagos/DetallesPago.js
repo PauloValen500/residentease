@@ -12,18 +12,20 @@ const DetallesPago = ({ paymentId, onClose }) => {
       .catch(error => console.error('Error fetching payment details:', error));
   }, [paymentId]);
 
-  if (!payment) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <div className='detallepagocontainer'>
       <div id='detallepago'>
         <h2>Detalles del Pago</h2>
         <IoCloseCircleOutline id='iconclosepago' onClick={onClose} />
-        <p>Fecha: {new Date(payment.Fecha).toLocaleDateString()}</p>
-        <p>Monto: {payment.Monto}</p>
-        <p>Detalles: {payment.Descripción}</p>
+        {payment ? (
+          <>
+            <p>Fecha: {new Date(payment.Fecha).toLocaleDateString()}</p>
+            <p>Monto: {payment.Monto}</p>
+            <p>Detalles: {payment.Descripción}</p>
+          </>
+        ) : (
+          <p>Loading...</p>
+        )}
       </div>
     </div>
   );
