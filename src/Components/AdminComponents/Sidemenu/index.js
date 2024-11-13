@@ -9,19 +9,19 @@ function SidemenuAdmin() {
     return (
         <div className='sidemenu'>
             <div className='iconcontainersidemenu'>      
-                <Link to={'/AdminAvisos'} className='link'>
+                <Link to={'/createnotice'} className='link'>
                     <BiMessageSquareDetail className='iconsidemenu'/>
                     <span className='titlesidemenu'>Admin. Avisos</span>
                 </Link>
             </div>
             <div className='iconcontainersidemenu'>             
-                <Link to={'/AdminPagos'} className='link'>
+                <Link to={'/managepayments'} className='link'>
                     <MdOutlinePayment className='iconsidemenu'/>
                     <span className='titlesidemenu'>Admin. Pagos</span>
                 </Link>
             </div>
             <div className='iconcontainersidemenu'>
-                <Link to={'/AdminCuentas'} className='link'>
+                <Link to={'/manageusers'} className='link'>
                     <TbUserSquareRounded className='iconsidemenu'/>
                     <span className='titlesidemenu'>Colonos</span>
                 </Link>

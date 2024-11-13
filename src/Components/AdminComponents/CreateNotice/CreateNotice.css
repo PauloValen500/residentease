@@ -1,0 +1,87 @@
+.admin-crud-container {
+    width: 95%;
+    margin: 20px auto;
+    background-color: #f9f9f9;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.admin-title {
+    text-align: center;
+    color: #2980b9;
+    margin-bottom: 20px;
+}
+
+.aviso-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 30px;
+    justify-content: center;
+}
+
+.aviso-form input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    flex: 1 1 200px;
+}
+
+.btn-submit, .btn-cancel {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-submit {
+    background-color: #2980b9;
+    color: white;
+}
+
+.btn-cancel {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.tableaviso {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border: 1px solid #ddd;
+}
+
+.headtable {
+    font-weight: bold;
+    background-color: #2980b9;
+    color: white;
+    padding: 12px;
+    border-bottom: 2px solid #ddd;
+}
+
+.registrosaviso td {
+    padding: 12px;
+    border: 1px solid #ddd;
+}
+
+.registrosaviso tr:hover {
+    background-color: #f1f1f1;
+}
+
+.btn-edit, .btn-delete {
+    padding: 5px 10px;
+    margin-right: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+}
+
+.btn-edit {
+    background-color: #27ae60;
+}
+
+.btn-delete {
+    background-color: #c0392b;
+}
