@@ -6,115 +6,147 @@ import './index.css';
 import './agregarpago.css';
 
 const HistorialPagos = () => {
-  const [pagos, setPagos] = useState([]);
-  const [selectedPayment, setSelectedPayment] = useState(null); // Cambiado a objeto completo
-  const [showAddPayment, setShowAddPayment] = useState(false);
-  const [date, setDate] = useState('');
-  const [amount, setAmount] = useState('');
-  const [details, setDetails] = useState('');
-  const [error, setError] = useState(null); // Para manejar errores de fetch
+    const [pagos, setPagos] = useState([]);
+    const [selectedPaymentId, setSelectedPaymentId] = useState(null);
+    const [showAddPayment, setShowAddPayment] = useState(false);
+    const [date, setDate] = useState('');
+    const [amount, setAmount] = useState('');
+    const [details, setDetails] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
-  useEffect(() => {
-    fetch('http://localhost:3000/api/Pago')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Error al obtener los pagos');
+    // Obtener el userId del almacenamiento local
+    const userId = localStorage.getItem('userId');
+
+    // Cargar pagos del usuario
+    useEffect(() => {
+        if (userId) {
+            fetch(`http://localhost:5000/api/pagos/${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    setPagos(data);
+                })
+                .catch(error => console.error('Error al cargar los pagos:', error));
         }
-        return response.json();
-      })
-      .then(data => setPagos(data))
-      .catch(error => {
-        console.error('Error fetching data:', error);
-        setError(error.message);
-      });
-  }, []);
+    }, [userId]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Aquí puedes agregar la lógica para registrar el nuevo pago
-    console.log('Nuevo pago registrado:', { date, amount, details });
-    // Después de registrar, podrías actualizar la lista de pagos
-  };
+    // Aquí está el método handleSubmit
+    const handleSubmit = (e) => {
+        e.preventDefault();
 
-  const handleViewDetails = (pago) => { // Recibe el objeto completo
-    setSelectedPayment(pago);
-  };
+        const newPayment = {
+            userId,
+            date,
+            amount,
+            details,
+        };
 
-  const handleAddPayment = () => {
-    setShowAddPayment(true);
-  };
+        console.log('Datos enviados al backend:', newPayment); // Depuración
 
-  const closeAddPayment = () => {
-    setShowAddPayment(false);
-  };
+        fetch('http://localhost:5000/api/pago', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newPayment),
+        })
+            .then(response => {
+                if (response.ok) {
+                    setSuccessMessage('Pago registrado con éxito');
+                    setErrorMessage('');
+                    // Recargar la lista de pagos después de un registro exitoso
+                    return fetch(`http://localhost:5000/api/pagos/${userId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            setPagos(data); // Actualizar el estado con los nuevos datos
+                            setShowAddPayment(false); // Cerrar el modal de agregar pago
+                            setDate(''); // Reiniciar el formulario
+                            setAmount('');
+                            setDetails('');
+                        });
+                } else {
+                    throw new Error('Error al registrar el pago');
+                }
+            })
+            .catch(error => {
+                console.error('Error al registrar el pago:', error);
+                setSuccessMessage('');
+                setErrorMessage('Error al registrar el pago. Por favor, intenta nuevamente.');
+            });
+    };
 
-  const closeDetails = () => {
-    setSelectedPayment(null);
-  };
+    const handleViewDetails = (paymentId) => {
+        setSelectedPaymentId(paymentId);
+    };
 
-  return (
-    <div className='historialpagoscontainer'>
-      <h2>Historial de Pagos</h2>
-      <button className='btpago' onClick={handleAddPayment}>Agregar Pago</button>
-      {error && <p className='error'>Error: {error}</p>}
-      <table className='table'>
-        <thead className='headtable'>
-          <tr>
-            <th>Fecha</th>
-            <th>Monto</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {pagos.map((pago) => (
-            <tr key={pago.Id_Pago}>
-              <td>{new Date(pago.Fecha).toLocaleDateString()}</td>
-              <td>{pago.Monto}</td>
-              <td>
-                <button onClick={() => handleViewDetails(pago)}>Ver detalles</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {selectedPayment && <DetallesPago payment={selectedPayment} onClose={closeDetails} />}
-      {showAddPayment && (
-        <div className='agregarpagocontainer'>
-          <div className='agregarpago'>
-            <h2>Registrar Nuevo Pago</h2>
-            <IoCloseCircleOutline id='iconclosepago' onClick={closeAddPayment} />
-            <form onSubmit={handleSubmit}>
-              <label htmlFor="date">Fecha:</label>
-              <input
-                type="date"
-                id="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                required
-              />
-              <label htmlFor="amount">Monto:</label>
-              <input
-                type="number"
-                id="amount"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                required
-              />
-              <label htmlFor="details">Detalles:</label>
-              <input
-                type="text"
-                id="details"
-                value={details}
-                onChange={(e) => setDetails(e.target.value)}
-                required
-              />
-              <button type="submit">Registrar Pago</button>
-            </form>
-          </div>
+    const closeDetails = () => {
+        setSelectedPaymentId(null);
+    };
+
+    return (
+        <div className='historialpagoscontainer'>
+            <h2>Historial de Pagos</h2>
+            <button className='btpago' onClick={() => setShowAddPayment(true)}>Agregar Pago</button>
+            <table className='table'>
+                <thead className='headtable'>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Monto</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {pagos.map((pago) => (
+                        <tr key={pago.Id_Pago}>
+                            <td>{new Date(pago.Fecha).toLocaleDateString()}</td>
+                            <td>${pago.Monto}</td>
+                            <td>
+                                <button onClick={() => handleViewDetails(pago.Id_Pago)}>Ver detalles</button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            {selectedPaymentId && <DetallesPago paymentId={selectedPaymentId} onClose={closeDetails} />}
+            {showAddPayment && (
+                <div className='agregarpagocontainer'>
+                    <div className='agregarpago'>
+                        <h2>Registrar Nuevo Pago</h2>
+                        <IoCloseCircleOutline id='iconclosepago' onClick={() => setShowAddPayment(false)} />
+                        <form onSubmit={handleSubmit}>
+                            <label htmlFor="date">Fecha:</label>
+                            <input
+                                type="date"
+                                id="date"
+                                value={date}
+                                onChange={(e) => setDate(e.target.value)}
+                                required
+                            />
+                            <label htmlFor="amount">Monto:</label>
+                            <input
+                                type="number"
+                                id="amount"
+                                value={amount}
+                                onChange={(e) => setAmount(e.target.value)}
+                                required
+                            />
+                            <label htmlFor="details">Detalles:</label>
+                            <input
+                                type="text"
+                                id="details"
+                                value={details}
+                                onChange={(e) => setDetails(e.target.value)}
+                                required
+                            />
+                            <button type="submit">Registrar Pago</button>
+                        </form>
+                        {successMessage && <p className="success-message">{successMessage}</p>}
+                        {errorMessage && <p className="error-message">{errorMessage}</p>}
+                    </div>
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 export default HistorialPagos;
