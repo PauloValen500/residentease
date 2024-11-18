@@ -27,6 +27,7 @@ app.use(express.json());
 
 // Conexión a la base de datos
 mssql.connect(config).then(() => {
+    const nodemailer = require('nodemailer');
     console.log('Conexión exitosa a SQL Server');
 
     // Ruta para validar login
@@ -130,6 +131,102 @@ mssql.connect(config).then(() => {
     });
     
 
+    // Ruta para obtener todos los avisos
+    app.get('/api/avisos', async (req, res) => {
+        try {
+            const pool = await mssql.connect(config);
+            const query = `
+                SELECT Id_Aviso, Id_Admin, Mensaje, Fecha
+                FROM Aviso
+                ORDER BY Fecha DESC
+            `;
+            const result = await pool.request().query(query);
+
+            res.status(200).send(result.recordset);
+        } catch (err) {
+            console.error('Error al obtener los avisos:', err);
+            res.status(500).send({ error: 'Error al obtener los avisos', details: err });
+        }
+    });
+
+    // Ruta para insertar un nuevo aviso
+    app.post('/api/aviso', async (req, res) => {
+        const { Id_Admin, Mensaje, Fecha } = req.body;
+    
+        if (!Id_Admin || !Mensaje || !Fecha) {
+            console.error('Datos faltantes:', { Id_Admin, Mensaje, Fecha });
+            return res.status(400).send({ error: 'Todos los campos son obligatorios' });
+        }
+    
+        try {
+            const pool = await mssql.connect(config);
+            const query = `
+                INSERT INTO Aviso (Id_Admin, Mensaje, Fecha)
+                VALUES (@Id_Admin, @Mensaje, @Fecha)
+            `;
+            console.log('Intentando insertar aviso con:', { Id_Admin, Mensaje, Fecha });
+            await pool.request()
+                .input('Id_Admin', mssql.VarChar, Id_Admin)
+                .input('Mensaje', mssql.VarChar, Mensaje)
+                .input('Fecha', mssql.Date, Fecha)
+                .query(query);
+    
+            console.log('Aviso registrado exitosamente');
+            res.status(201).send({ success: true, message: 'Aviso registrado con éxito' });
+        } catch (err) {
+            console.error('Error al registrar el aviso:', err);
+            res.status(500).send({ error: 'Error al registrar el aviso', details: err });
+        }
+    });
+    
+    app.get('/api/pagos', async (req, res) => {
+        try {
+            const pool = await mssql.connect(config);
+            const query = `
+                SELECT Id_Pago, Id_Colono, Monto, Fecha, Descripción
+                FROM Pago
+                ORDER BY Fecha DESC
+            `;
+            const result = await pool.request().query(query);
+    
+            res.status(200).send(result.recordset);
+        } catch (err) {
+            console.error('Error al obtener los pagos:', err);
+            res.status(500).send({ error: 'Error al obtener los pagos', details: err });
+        }
+    });
+    
+    app.post('/api/send-email', async (req, res) => {
+        const { email, subject, content } = req.body;
+    
+        if (!email || !subject || !content) {
+            return res.status(400).send({ error: 'Todos los campos son obligatorios' });
+        }
+    
+        try {
+            const transporter = nodemailer.createTransport({
+                service: 'Gmail', // Cambia si usas otro proveedor
+                auth: {
+                    user: '21240207@leon.tecnm.mx',
+                    pass: 'Gemelafor4',
+                },
+            });
+    
+            const mailOptions = {
+                from: '21240207@leon.tecnm.mx',
+                to: email,
+                subject: subject,
+                text: content,
+            };
+    
+            await transporter.sendMail(mailOptions);
+            res.status(200).send({ success: true, message: 'Correo enviado con éxito' });
+        } catch (err) {
+            console.error('Error al enviar el correo:', err);
+            res.status(500).send({ error: 'Error al enviar el correo', details: err });
+        }
+    });
+
 
 
     app.post('/api/pago', async (req, res) => {
@@ -162,6 +259,101 @@ mssql.connect(config).then(() => {
             res.status(500).send({ error: 'Error al registrar el pago', details: err });
         }
     });    
+    
+    app.get('/api/colonos', async (req, res) => {
+        try {
+            const pool = await mssql.connect(config);
+            const query = `
+                SELECT Id_Colono, Nombre, Apellido, Direccion, Telefono
+                FROM Colono
+                ORDER BY Nombre
+            `;
+            const result = await pool.request().query(query);
+            res.status(200).send(result.recordset);
+        } catch (err) {
+            console.error('Error al obtener los colonos:', err);
+            res.status(500).send({ error: 'Error al obtener los colonos', details: err });
+        }
+    });
+
+    app.post('/api/colonos', async (req, res) => {
+        const { Id_Colono, Contraseña, Nombre, Apellido, Direccion, Telefono } = req.body;
+    
+        if (!Id_Colono || !Contraseña || !Nombre || !Apellido || !Direccion || !Telefono) {
+            return res.status(400).send({ error: 'Todos los campos son obligatorios' });
+        }
+    
+        try {
+            const pool = await mssql.connect(config);
+            const query = `
+                INSERT INTO Colono (Id_Colono, Contraseña, Nombre, Apellido, Direccion, Telefono)
+                VALUES (@Id_Colono, @Contraseña, @Nombre, @Apellido, @Direccion, @Telefono)
+            `;
+            await pool.request()
+                .input('Id_Colono', mssql.VarChar, Id_Colono)
+                .input('Contraseña', mssql.VarChar, Contraseña)
+                .input('Nombre', mssql.VarChar, Nombre)
+                .input('Apellido', mssql.VarChar, Apellido)
+                .input('Direccion', mssql.VarChar, Direccion)
+                .input('Telefono', mssql.VarChar, Telefono)
+                .query(query);
+    
+            res.status(201).send({ success: true, message: 'Colono creado correctamente' });
+        } catch (err) {
+            console.error('Error al crear el colono:', err);
+            res.status(500).send({ error: 'Error al crear el colono', details: err });
+        }
+    });
+
+    app.put('/api/colonos/:id', async (req, res) => {
+        const { id } = req.params;
+        const { Nombre, Apellido, Direccion, Telefono } = req.body;
+    
+        if (!Nombre || !Apellido || !Direccion || !Telefono) {
+            return res.status(400).send({ error: 'Todos los campos son obligatorios para actualizar' });
+        }
+    
+        try {
+            const pool = await mssql.connect(config);
+            const query = `
+                UPDATE Colono
+                SET Nombre = @Nombre, Apellido = @Apellido, Direccion = @Direccion, Telefono = @Telefono
+                WHERE Id_Colono = @Id
+            `;
+            await pool.request()
+                .input('Id', mssql.VarChar, id)
+                .input('Nombre', mssql.VarChar, Nombre)
+                .input('Apellido', mssql.VarChar, Apellido)
+                .input('Direccion', mssql.VarChar, Direccion)
+                .input('Telefono', mssql.VarChar, Telefono)
+                .query(query);
+    
+            res.status(200).send({ success: true, message: 'Colono actualizado correctamente' });
+        } catch (err) {
+            console.error('Error al actualizar el colono:', err);
+            res.status(500).send({ error: 'Error al actualizar el colono', details: err });
+        }
+    });
+    
+    app.delete('/api/colonos/:id', async (req, res) => {
+        const { id } = req.params;
+    
+        try {
+            const pool = await mssql.connect(config);
+            const query = `
+                DELETE FROM Colono
+                WHERE Id_Colono = @Id
+            `;
+            await pool.request()
+                .input('Id', mssql.VarChar, id)
+                .query(query);
+    
+            res.status(200).send({ success: true, message: 'Colono eliminado correctamente' });
+        } catch (err) {
+            console.error('Error al eliminar el colono:', err);
+            res.status(500).send({ error: 'Error al eliminar el colono', details: err });
+        }
+    });
     
 
     app.listen(port, () => {

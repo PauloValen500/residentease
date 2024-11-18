@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import './index.css';
 
 function ManageUsers() {
-
     const [colonos, setColonos] = useState([]);
     const [form, setForm] = useState({
         Id_Colono: '',
@@ -15,11 +14,11 @@ function ManageUsers() {
     const [isEditing, setIsEditing] = useState(false);
 
     useEffect(() => {
-        // Reemplaza con la URL correcta de tu API para obtener colonos
-        fetch('http://localhost:3000/api/Colono')
+        // Obtener colonos desde la API
+        fetch('http://localhost:5000/api/colonos')
             .then(response => response.json())
             .then(data => setColonos(data))
-            .catch(error => console.error('Error fetching colonos:', error));
+            .catch(error => console.error('Error al obtener los colonos:', error));
     }, []);
 
     const handleChange = (e) => {
@@ -28,37 +27,49 @@ function ManageUsers() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
         if (isEditing) {
-            // Lógica para actualizar un colono existente
-            fetch(`http://localhost:3000/api/Colono/${form.Id_Colono}`, {
+            // Actualizar un colono existente
+            fetch(`http://localhost:5000/api/colonos/${form.Id_Colono}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(form)
             })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al actualizar el colono.');
+                    }
+                    return response.json();
+                })
                 .then(updatedColono => {
                     setColonos(colonos.map(col => col.Id_Colono === updatedColono.Id_Colono ? updatedColono : col));
                     alert('Colono actualizado correctamente.');
                 })
-                .catch(error => console.error('Error updating colono:', error));
+                .catch(error => console.error('Error al actualizar el colono:', error));
         } else {
-            // Lógica para crear un nuevo colono
-            fetch('http://localhost:3000/api/Colono', {
+            // Crear un nuevo colono
+            fetch('http://localhost:5000/api/colonos', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(form)
             })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al crear el colono.');
+                    }
+                    return response.json();
+                })
                 .then(newColono => {
                     setColonos([...colonos, newColono]);
                     alert('Colono creado correctamente.');
                 })
-                .catch(error => console.error('Error creating colono:', error));
+                .catch(error => console.error('Error al crear el colono:', error));
         }
+
         setForm({
             Id_Colono: '',
             Contraseña: '',
@@ -77,14 +88,17 @@ function ManageUsers() {
 
     const handleDelete = (id) => {
         if (window.confirm('¿Estás seguro de que deseas eliminar este colono?')) {
-            fetch(`http://localhost:3000/api/Colono/${id}`, {
+            fetch(`http://localhost:5000/api/colonos/${id}`, {
                 method: 'DELETE'
             })
-                .then(() => {
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al eliminar el colono.');
+                    }
                     setColonos(colonos.filter(colono => colono.Id_Colono !== id));
                     alert('Colono eliminado correctamente.');
                 })
-                .catch(error => console.error('Error deleting colono:', error));
+                .catch(error => console.error('Error al eliminar el colono:', error));
         }
     };
 
@@ -198,4 +212,3 @@ function ManageUsers() {
 }
 
 export default ManageUsers;
-

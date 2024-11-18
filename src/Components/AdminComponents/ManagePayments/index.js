@@ -4,14 +4,26 @@ import './ManagePayment.css';
 function ManagePayment() {
     const [pagos, setPagos] = useState([]);
     const [status, setStatus] = useState({});
-    const [emailContent, setEmailContent] = useState({});
-    const [selectedPago, setSelectedPago] = useState(null);
+    const [isLoading, setIsLoading] = useState(true); // Estado de carga
+    const [error, setError] = useState(null); // Estado de error
 
     useEffect(() => {
-        fetch('http://localhost:3000/api/Pago')
-            .then(response => response.json())
-            .then(data => setPagos(data))
-            .catch(error => console.error('Error fetching payments:', error));
+        fetch('http://localhost:5000/api/pagos')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al obtener los pagos.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                setPagos(data);
+                setIsLoading(false);
+            })
+            .catch(error => {
+                console.error('Error fetching payments:', error);
+                setError(error.message);
+                setIsLoading(false);
+            });
     }, []);
 
     const handleStatusChange = (id, newStatus) => {
@@ -23,7 +35,7 @@ function ManagePayment() {
 
     const handleSendEmail = (pago) => {
         const pagoStatus = status[pago.Id_Pago] || "No revisado";
-        const contenido = `
+        const emailContent = `
             Estimado Colono,
 
             Hemos revisado tu pago con el siguiente detalle:
@@ -40,10 +52,35 @@ function ManagePayment() {
             Saludos,
             Administrador
         `;
-        // Aquí deberías implementar la lógica para enviar el correo electrónico utilizando tu backend
-        console.log(`Enviando correo a ${pago.Id_Colono} con el siguiente contenido:\n${contenido}`);
-        alert(`Correo enviado a ${pago.Id_Colono}`);
+
+        fetch('http://localhost:5000/api/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: pago.Id_Colono,
+                subject: `Estado de tu pago: ${pago.Id_Pago}`,
+                content: emailContent,
+            }),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al enviar el correo.');
+                }
+                alert(`Correo enviado a ${pago.Id_Colono}`);
+            })
+            .catch(error => {
+                console.error('Error al enviar el correo:', error);
+                alert('Error al enviar el correo. Inténtalo nuevamente.');
+            });
     };
+
+    if (isLoading) {
+        return <p>Cargando pagos...</p>;
+    }
+
+    if (error) {
+        return <p className="error-message">{error}</p>;
+    }
 
     return (
         <div className="payment-review-container">

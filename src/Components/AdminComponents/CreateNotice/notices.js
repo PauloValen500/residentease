@@ -1,48 +1,65 @@
 import React, { useEffect, useState } from "react";
-import "./CreateNotice.css"
+import "./CreateNotice.css";
 
 function Notices() {
     const [avisos, setAvisos] = useState([]);
-    const [form, setForm] = useState({ Id_Aviso: '', Id_Admin: '', Mensaje: '', Fecha: '' });
+    const [form, setForm] = useState({ Id_Admin: '', Mensaje: '', Fecha: '' });
     const [isEditing, setIsEditing] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
+    // Obtener todos los avisos
     useEffect(() => {
-        fetch('http://localhost:3000/api/Aviso')
+        fetch('http://localhost:5000/api/avisos')
             .then(response => response.json())
             .then(data => setAvisos(data))
             .catch(error => console.error('Error fetching data:', error));
     }, []);
 
+    // Manejar cambios en el formulario
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
+    // Manejar envío del formulario
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (isEditing) {
-            // Lógica para actualizar un aviso existente
-            console.log('Actualizar aviso:', form);
-        } else {
-            // Lógica para crear un nuevo aviso
-            console.log('Crear nuevo aviso:', form);
-        }
-        setForm({ Id_Aviso: '', Id_Admin: '', Mensaje: '', Fecha: '' });
-        setIsEditing(false);
-    };
 
-    const handleEdit = (aviso) => {
-        setForm(aviso);
-        setIsEditing(true);
-    };
+        // Lógica para crear un nuevo aviso
+        fetch('http://localhost:5000/api/aviso', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(form),
+        })
+            .then(response => {
+                if (response.ok) {
+                    setSuccess('Aviso registrado con éxito.');
+                    setError('');
+                    setForm({ Id_Admin: '', Mensaje: '', Fecha: '' }); // Limpiar formulario
 
-    const handleDelete = (id) => {
-        // Lógica para eliminar un aviso
-        console.log('Eliminar aviso con ID:', id);
+                    // Actualizar la lista de avisos
+                    fetch('http://localhost:5000/api/avisos')
+                        .then(response => response.json())
+                        .then(data => setAvisos(data));
+                } else {
+                    return response.json().then(err => {
+                        throw new Error(err.error || 'Error al registrar el aviso');
+                    });
+                }
+            })
+            .catch(err => {
+                setSuccess('');
+                setError(err.message);
+                console.error('Error al registrar el aviso:', err);
+            });
     };
 
     return (
         <div className="admin-crud-container">
             <h2 className="admin-title">Administración de Avisos</h2>
+
+            {error && <p className="error-message">{error}</p>}
+            {success && <p className="success-message">{success}</p>}
 
             <form className="aviso-form" onSubmit={handleSubmit}>
                 <input
@@ -71,28 +88,15 @@ function Notices() {
                 <button type="submit" className="btn-submit">
                     {isEditing ? 'Actualizar' : 'Crear'}
                 </button>
-                {isEditing && (
-                    <button
-                        type="button"
-                        className="btn-cancel"
-                        onClick={() => {
-                            setIsEditing(false);
-                            setForm({ Id_Aviso: '', Id_Admin: '', Mensaje: '', Fecha: '' });
-                        }}
-                    >
-                        Cancelar
-                    </button>
-                )}
             </form>
 
-            <table className="tableaviso" border='1'>
+            <table className="tableaviso" border="1">
                 <thead className="headtable">
                     <tr>
                         <td>ID Aviso</td>
                         <td>ID Administrador</td>
                         <td>Mensaje</td>
                         <td>Fecha</td>
-                        <td>Acciones</td>
                     </tr>
                 </thead>
                 <tbody className="registrosaviso">
@@ -102,16 +106,12 @@ function Notices() {
                             <td>{aviso.Id_Admin}</td>
                             <td>{aviso.Mensaje}</td>
                             <td>{new Date(aviso.Fecha).toLocaleDateString()}</td>
-                            <td>
-                                <button className="btn-edit" onClick={() => handleEdit(aviso)}>Editar</button>
-                                <button className="btn-delete" onClick={() => handleDelete(aviso.Id_Aviso)}>Eliminar</button>
-                            </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
         </div>
-    )
+    );
 }
 
 export default Notices;
