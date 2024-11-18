@@ -92,6 +92,10 @@ function LogInform() {
                     <button type="submit" className="bt-confirmar">Confirmar</button>
                 </form>
                 {errorMessage && <p className="error-message">{errorMessage}</p>}
+                <div class='air air1'></div>
+                <div class='air air2'></div>
+                <div class='air air3'></div>
+                <div class='air air4'></div>
             </section>
         </div>
     );

@@ -128,6 +128,9 @@ mssql.connect(config).then(() => {
             res.status(500).send({ error: 'Error al obtener el usuario', details: err });
         }
     });
+    
+
+
 
     app.post('/api/pago', async (req, res) => {
         const { userId, date, amount, details } = req.body;
@@ -160,51 +163,6 @@ mssql.connect(config).then(() => {
         }
     });    
     
-    // Ruta para obtener avisos por administrador
-    app.get('/api/avisos/:adminId', async (req, res) => {
-        const { adminId } = req.params;
-        console.log('Solicitando avisos para el administrador:', adminId);
-    
-        try {
-            const pool = await mssql.connect(config);
-    
-            // Verificar que el ID corresponde a un administrador
-            const adminCheckQuery = `
-                SELECT COUNT(*) AS count
-                FROM Administrador
-                WHERE Id_Admin = @adminId
-            `;
-            const adminCheckResult = await pool.request()
-                .input('adminId', mssql.VarChar, adminId)
-                .query(adminCheckQuery);
-    
-            if (adminCheckResult.recordset[0].count === 0) {
-                console.error('ID no pertenece a un administrador:', adminId);
-                return res.status(403).send({ error: 'No autorizado. El usuario no es un administrador.' });
-            }
-    
-            // Obtener los avisos del administrador
-            const query = `
-                SELECT Id_Aviso, Mensaje, Fecha
-                FROM Aviso
-                WHERE Id_Admin = @adminId
-                ORDER BY Fecha DESC
-            `;
-            const result = await pool.request()
-                .input('adminId', mssql.VarChar, adminId)
-                .query(query);
-    
-            if (result.recordset.length > 0) {
-                res.status(200).send(result.recordset);
-            } else {
-                res.status(404).send({ error: 'No hay avisos para este administrador.' });
-            }
-        } catch (err) {
-            console.error('Error al obtener los avisos:', err);
-            res.status(500).send({ error: 'Error al obtener los avisos', details: err });
-        }
-    });    
-
 
     app.listen(port, () => {
         console.log(`Servidor escuchando en http://localhost:${port}`);
