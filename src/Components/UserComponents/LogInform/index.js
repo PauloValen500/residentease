@@ -7,12 +7,17 @@ import { IoMdKey } from "react-icons/io";
 function LogInform() {
     const [email, setEmail] = useState(""); // Correo electrónico
     const [password, setPassword] = useState(""); // Contraseña
-    const [userType, setUserType] = useState("Residente"); // Tipo de usuario
+    const [userType, setUserType] = useState("Residente"); // Tipo de usuario predeterminado
     const [errorMessage, setErrorMessage] = useState(""); // Mensajes de error
     const navigate = useNavigate(); // Navegación para redirigir en caso de éxito
 
     const handleLogin = async (e) => {
         e.preventDefault();
+
+        if (!userType) {
+            setErrorMessage("Por favor, selecciona un tipo de usuario.");
+            return;
+        }
 
         try {
             const response = await fetch('http://localhost:5000/api/login', {
@@ -30,8 +35,12 @@ function LogInform() {
                 localStorage.setItem('userId', data.user.Id_Colono || data.user.Id_Admin);
                 localStorage.setItem('userType', userType);
 
-                // Login exitoso, redirigir a la página inicial
-                navigate('/inicio', { state: { user: data.user, userType } });
+                // Redirigir según el tipo de usuario
+                if (userType === "Residente") {
+                    navigate('/inicio', { state: { user: data.user, userType } });
+                } else if (userType === "Administrador") {
+                    navigate('/createnotice', { state: { user: data.user, userType } });
+                }
             } else {
                 // Mostrar mensaje de error
                 setErrorMessage(data.message || 'Error al iniciar sesión');
