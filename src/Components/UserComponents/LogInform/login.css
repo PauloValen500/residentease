@@ -60,7 +60,7 @@
 }
 
 .iconlogin {
-    margin-bottom: 5px;
+    margin-bottom: 15px;
     pointer-events: none;
     /* Para que el ícono no interfiera con la entrada de texto */
     background-color: darkgray;

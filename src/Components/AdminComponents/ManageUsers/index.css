@@ -1,13 +1,12 @@
-.admin-crud-container {
-    width: 92%;
-    background-color: #f9f9f9;
+.colonos-crud-container {
+    margin-top: 70px; /* Para evitar la navbar */
+    margin-left: 41px; /* Para evitar el sidemenu */
     padding: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Añadir sombra para mejor visibilidad */
+    text-align: center; /* Centrar el contenido del contenedor */
 }
 
 .admin-title {
@@ -16,7 +15,7 @@
     margin-bottom: 20px;
 }
 
-.aviso-form {
+.colono-form {
     display: flex;
     width: 95%;
     gap: 10px;
@@ -24,7 +23,7 @@
     justify-content: center;
 }
 
-.aviso-form input {
+.colono-form input {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -65,6 +64,7 @@
 .registrosaviso td {
     padding: 12px;
     border: 1px solid #ddd;
+    text-align: center;
 }
 
 .registrosaviso tr:hover {

@@ -1,3 +1,4 @@
+// index.js
 import React, { useState, useEffect } from 'react';
 import DetallesPago from './DetallesPago';
 import { IoCloseCircleOutline } from "react-icons/io5";
@@ -6,27 +7,37 @@ import './agregarpago.css';
 
 const HistorialPagos = () => {
   const [pagos, setPagos] = useState([]);
-  const [selectedPaymentId, setSelectedPaymentId] = useState(null);
+  const [selectedPayment, setSelectedPayment] = useState(null); // Cambiado a objeto completo
   const [showAddPayment, setShowAddPayment] = useState(false);
   const [date, setDate] = useState('');
   const [amount, setAmount] = useState('');
   const [details, setDetails] = useState('');
+  const [error, setError] = useState(null); // Para manejar errores de fetch
 
   useEffect(() => {
     fetch('http://localhost:3000/api/Pago')
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error al obtener los pagos');
+        }
+        return response.json();
+      })
       .then(data => setPagos(data))
-      .catch(error => console.error('Error fetching data:', error));
+      .catch(error => {
+        console.error('Error fetching data:', error);
+        setError(error.message);
+      });
   }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // Aquí puedes agregar la lógica para registrar el nuevo pago
     console.log('Nuevo pago registrado:', { date, amount, details });
+    // Después de registrar, podrías actualizar la lista de pagos
   };
 
-  const handleViewDetails = (paymentId) => {
-    setSelectedPaymentId(paymentId);
+  const handleViewDetails = (pago) => { // Recibe el objeto completo
+    setSelectedPayment(pago);
   };
 
   const handleAddPayment = () => {
@@ -38,13 +49,14 @@ const HistorialPagos = () => {
   };
 
   const closeDetails = () => {
-    setSelectedPaymentId(null);
+    setSelectedPayment(null);
   };
 
   return (
     <div className='historialpagoscontainer'>
       <h2>Historial de Pagos</h2>
       <button className='btpago' onClick={handleAddPayment}>Agregar Pago</button>
+      {error && <p className='error'>Error: {error}</p>}
       <table className='table'>
         <thead className='headtable'>
           <tr>
@@ -59,13 +71,13 @@ const HistorialPagos = () => {
               <td>{new Date(pago.Fecha).toLocaleDateString()}</td>
               <td>{pago.Monto}</td>
               <td>
-                <button onClick={() => handleViewDetails(pago.Id_Pago)}>Ver detalles</button>
+                <button onClick={() => handleViewDetails(pago)}>Ver detalles</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      {selectedPaymentId && <DetallesPago paymentId={selectedPaymentId} onClose={closeDetails} />}
+      {selectedPayment && <DetallesPago payment={selectedPayment} onClose={closeDetails} />}
       {showAddPayment && (
         <div className='agregarpagocontainer'>
           <div className='agregarpago'>
@@ -78,6 +90,7 @@ const HistorialPagos = () => {
                 id="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
+                required
               />
               <label htmlFor="amount">Monto:</label>
               <input
@@ -85,6 +98,7 @@ const HistorialPagos = () => {
                 id="amount"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
+                required
               />
               <label htmlFor="details">Detalles:</label>
               <input
@@ -92,6 +106,7 @@ const HistorialPagos = () => {
                 id="details"
                 value={details}
                 onChange={(e) => setDetails(e.target.value)}
+                required
               />
               <button type="submit">Registrar Pago</button>
             </form>

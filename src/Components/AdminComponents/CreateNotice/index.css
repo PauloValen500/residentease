@@ -1,0 +1,20 @@
+/* Estilos para el contenedor de avisos */
+.avisoscontainer {
+    margin-top: 70px; /* Para evitar la navbar */
+    margin-left: 41px; /* Para evitar el sidemenu */
+    padding: 20px;
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Añadir sombra para mejor visibilidad */
+    width: calc(100% - 10px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+
+
+
+
+

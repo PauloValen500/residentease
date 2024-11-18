@@ -23,7 +23,6 @@ function LogInform() {
                     <label htmlFor="opciones">Tipo de usuario:</label>
                     <select id="opciones" name="opciones">
                         <option value="opcion1">Residente</option>
-                        <option value="opcion2">Seguridad</option>
                         <option value="opcion3">Administrador</option>
                     </select>
                     <Link to={'/inicio'}><button className="bt-confirmar">Confirmar</button></Link>

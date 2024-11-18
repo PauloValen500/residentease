@@ -1,0 +1,63 @@
+.payment-review-container {
+    margin-top: 70px; /* Para evitar la navbar */
+    margin-left: 41px; /* Para evitar el sidemenu */
+    padding: 20px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Añadir sombra para mejor visibilidad */
+    text-align: center; /* Centrar el contenido del contenedor */
+}
+
+.admin-title {
+    text-align: center;
+    color: #2980b9;
+    margin-bottom: 20px;
+}
+
+.tablepagos {
+    width: 95%;
+    border-collapse: collapse;
+    background-color: white;
+    border: 1px solid #ddd;
+}
+
+.headtable {
+    font-weight: bold;
+    background-color: #2980b9;
+    color: white;
+    padding: 12px;
+    border-bottom: 2px solid #ddd;
+}
+
+.registrosaviso td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.registrosaviso tr:hover {
+    background-color: #f1f1f1;
+}
+
+.btn-send-email {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #27ae60;
+    color: white;
+}
+
+.btn-send-email:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+}
+
+select {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    cursor: pointer;
+}
