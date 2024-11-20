@@ -130,6 +130,31 @@ mssql.connect(config).then(() => {
         }
     });
     
+    app.get('/api/pago/:paymentId', async (req, res) => {
+        const { paymentId } = req.params;
+    
+        try {
+            const pool = await mssql.connect(config);
+            const query = `
+                SELECT Id_Pago, Id_Colono, Fecha, Monto, Descripción
+                FROM Pago
+                WHERE Id_Pago = @paymentId
+            `;
+            const result = await pool.request()
+                .input('paymentId', mssql.VarChar, paymentId)
+                .query(query);
+    
+            if (result.recordset.length > 0) {
+                res.status(200).send(result.recordset[0]);
+            } else {
+                res.status(404).send({ error: 'Pago no encontrado' });
+            }
+        } catch (err) {
+            console.error('Error al obtener detalles del pago:', err);
+            res.status(500).send({ error: 'Error al obtener detalles del pago' });
+        }
+    });
+    
 
     // Ruta para obtener todos los avisos
     app.get('/api/avisos', async (req, res) => {
@@ -227,6 +252,34 @@ mssql.connect(config).then(() => {
         }
     });
 
+    app.post('/api/colonos', async (req, res) => {
+        const { correo, contraseña, nombre, apellidos, direccion, telefono } = req.body;
+    
+        if (!correo || !contraseña || !nombre || !apellidos || !direccion || !telefono) {
+            return res.status(400).send({ error: 'Todos los campos son obligatorios.' });
+        }
+    
+        try {
+            const pool = await mssql.connect(config);
+            const query = `
+                INSERT INTO Colono (Id_Colono, Contraseña, Nombre, Apellido, Direccion, Telefono)
+                VALUES (@correo, @contraseña, @nombre, @apellidos, @direccion, @telefono)
+            `;
+            await pool.request()
+                .input('correo', mssql.VarChar, correo)
+                .input('contraseña', mssql.VarChar, contraseña)
+                .input('nombre', mssql.VarChar, nombre)
+                .input('apellidos', mssql.VarChar, apellidos)
+                .input('direccion', mssql.VarChar, direccion)
+                .input('telefono', mssql.VarChar, telefono)
+                .query(query);
+    
+            res.status(201).send({ success: true, message: 'Usuario registrado con éxito.' });
+        } catch (err) {
+            console.error(err);
+            res.status(500).send({ error: 'Error al registrar el usuario.' });
+        }
+    });
 
 
     app.post('/api/pago', async (req, res) => {

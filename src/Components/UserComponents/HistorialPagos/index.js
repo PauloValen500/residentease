@@ -1,4 +1,3 @@
-// index.js
 import React, { useState, useEffect } from 'react';
 import DetallesPago from './DetallesPago';
 import { IoCloseCircleOutline } from "react-icons/io5";
@@ -7,7 +6,7 @@ import './agregarpago.css';
 
 const HistorialPagos = () => {
     const [pagos, setPagos] = useState([]);
-    const [selectedPaymentId, setSelectedPaymentId] = useState(null);
+    const [selectedPayment, setSelectedPayment] = useState(null);
     const [showAddPayment, setShowAddPayment] = useState(false);
     const [date, setDate] = useState('');
     const [amount, setAmount] = useState('');
@@ -15,52 +14,56 @@ const HistorialPagos = () => {
     const [successMessage, setSuccessMessage] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
-    // Obtener el userId del almacenamiento local
     const userId = localStorage.getItem('userId');
 
-    // Cargar pagos del usuario
     useEffect(() => {
         if (userId) {
             fetch(`http://localhost:5000/api/pagos/${userId}`)
                 .then(response => response.json())
-                .then(data => {
-                    setPagos(data);
-                })
+                .then(data => setPagos(data))
                 .catch(error => console.error('Error al cargar los pagos:', error));
         }
     }, [userId]);
 
-    // Aquí está el método handleSubmit
+    const handleViewDetails = (paymentId) => {
+        fetch(`http://localhost:5000/api/pago/${paymentId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al obtener detalles del pago.');
+                }
+                return response.json();
+            })
+            .then(data => setSelectedPayment(data))
+            .catch(error => {
+                console.error('Error al obtener detalles del pago:', error);
+                setSelectedPayment(null);
+            });
+    };
+
+    const closeDetails = () => {
+        setSelectedPayment(null);
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const newPayment = {
-            userId,
-            date,
-            amount,
-            details,
-        };
-
-        console.log('Datos enviados al backend:', newPayment); // Depuración
+        const newPayment = { userId, date, amount, details };
 
         fetch('http://localhost:5000/api/pago', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newPayment),
         })
             .then(response => {
                 if (response.ok) {
                     setSuccessMessage('Pago registrado con éxito');
                     setErrorMessage('');
-                    // Recargar la lista de pagos después de un registro exitoso
                     return fetch(`http://localhost:5000/api/pagos/${userId}`)
                         .then(response => response.json())
                         .then(data => {
-                            setPagos(data); // Actualizar el estado con los nuevos datos
-                            setShowAddPayment(false); // Cerrar el modal de agregar pago
-                            setDate(''); // Reiniciar el formulario
+                            setPagos(data);
+                            setShowAddPayment(false);
+                            setDate('');
                             setAmount('');
                             setDetails('');
                         });
@@ -73,14 +76,6 @@ const HistorialPagos = () => {
                 setSuccessMessage('');
                 setErrorMessage('Error al registrar el pago. Por favor, intenta nuevamente.');
             });
-    };
-
-    const handleViewDetails = (paymentId) => {
-        setSelectedPaymentId(paymentId);
-    };
-
-    const closeDetails = () => {
-        setSelectedPaymentId(null);
     };
 
     return (
@@ -107,7 +102,7 @@ const HistorialPagos = () => {
                     ))}
                 </tbody>
             </table>
-            {selectedPaymentId && <DetallesPago paymentId={selectedPaymentId} onClose={closeDetails} />}
+            {selectedPayment && <DetallesPago payment={selectedPayment} onClose={closeDetails} />}
             {showAddPayment && (
                 <div className='agregarpagocontainer'>
                     <div className='agregarpago'>
