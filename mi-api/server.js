@@ -6,8 +6,8 @@ const port = 5000;
 
 // Configuración de la base de datos
 const config = {
-    user: 'OscarPrueba',
-    password: '12345678',
+    user: 'nuevo_usuario',
+    password: '123456789',
     server: '127.0.0.1',
     database: 'residentease',
     options: {
