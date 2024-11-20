@@ -1,6 +1,6 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import './login.css';
-import { useNavigate } from "react-router-dom";
 import { CiUser } from "react-icons/ci";
 import { IoMdKey } from "react-icons/io";
 
@@ -92,10 +92,13 @@ function LogInform() {
                     <button type="submit" className="bt-confirmar">Confirmar</button>
                 </form>
                 {errorMessage && <p className="error-message">{errorMessage}</p>}
-                <div class='air air1'></div>
-                <div class='air air2'></div>
-                <div class='air air3'></div>
-                <div class='air air4'></div>
+                <Link to={'/register'}>
+                    <button className="bt-registrar">Registrarme</button>
+                </Link>
+                <div className='air air1'></div>
+                <div className='air air2'></div>
+                <div className='air air3'></div>
+                <div className='air air4'></div>
             </section>
         </div>
     );
