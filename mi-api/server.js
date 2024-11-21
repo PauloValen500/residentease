@@ -313,7 +313,7 @@ mssql.connect(config).then(() => {
         }
     });    
     
-    app.get('/api/colonos', async (req, res) => {
+    app.get('/api/users', async (req, res) => {
         try {
             const pool = await mssql.connect(config);
             const query = `
@@ -329,7 +329,7 @@ mssql.connect(config).then(() => {
         }
     });
 
-    app.post('/api/colonos', async (req, res) => {
+    app.post('/api/users', async (req, res) => {
         const { Id_Colono, Contraseña, Nombre, Apellido, Direccion, Telefono } = req.body;
     
         if (!Id_Colono || !Contraseña || !Nombre || !Apellido || !Direccion || !Telefono) {
@@ -357,8 +357,9 @@ mssql.connect(config).then(() => {
             res.status(500).send({ error: 'Error al crear el colono', details: err });
         }
     });
+    
 
-    app.put('/api/colonos/:id', async (req, res) => {
+    app.put('/api/users/:id', async (req, res) => {
         const { id } = req.params;
         const { Nombre, Apellido, Direccion, Telefono } = req.body;
     
@@ -388,7 +389,7 @@ mssql.connect(config).then(() => {
         }
     });
     
-    app.delete('/api/colonos/:id', async (req, res) => {
+    app.delete('/api/users/:id', async (req, res) => {
         const { id } = req.params;
     
         try {
