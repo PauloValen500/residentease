@@ -15,7 +15,7 @@ function ManageUsers() {
 
     useEffect(() => {
         // Obtener colonos desde la API
-        fetch('http://localhost:5000/api/colonos')
+        fetch('http://localhost:5000/api/users')
             .then(response => response.json())
             .then(data => setColonos(data))
             .catch(error => console.error('Error al obtener los colonos:', error));
@@ -30,7 +30,7 @@ function ManageUsers() {
 
         if (isEditing) {
             // Actualizar un colono existente
-            fetch(`http://localhost:5000/api/colonos/${form.Id_Colono}`, {
+            fetch(`http://localhost:5000/api/users/${form.Id_Colono}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -50,7 +50,7 @@ function ManageUsers() {
                 .catch(error => console.error('Error al actualizar el colono:', error));
         } else {
             // Crear un nuevo colono
-            fetch('http://localhost:5000/api/colonos', {
+            fetch('http://localhost:5000/api/users', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -88,7 +88,7 @@ function ManageUsers() {
 
     const handleDelete = (id) => {
         if (window.confirm('¿Estás seguro de que deseas eliminar este colono?')) {
-            fetch(`http://localhost:5000/api/colonos/${id}`, {
+            fetch(`http://localhost:5000/api/users/${id}`, {
                 method: 'DELETE'
             })
                 .then(response => {
