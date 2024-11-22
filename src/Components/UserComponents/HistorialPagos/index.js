@@ -125,7 +125,7 @@ const HistorialPagos = () => {
                                 onChange={(e) => setAmount(e.target.value)}
                                 required
                             />
-                            <label htmlFor="details">Detalles:</label>
+                            <label htmlFor="details">Folio - Detalles:</label>
                             <input
                                 type="text"
                                 id="details"
